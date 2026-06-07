@@ -45,10 +45,22 @@ fun SettingsBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                QuickToolItem(Icons.Default.History, "History") { /* Action */ }
-                QuickToolItem(Icons.Default.Download, "Downloads") { /* Action */ }
-                QuickToolItem(Icons.Default.Star, "Bookmarks") { /* Action */ }
-                QuickToolItem(Icons.Default.Face, "Incognito") { /* Action */ }
+                QuickToolItem(Icons.Default.History, "History") { 
+                    onDismiss()
+                    onNavigateToSettings("history")
+                }
+                QuickToolItem(Icons.Default.Download, "Downloads") { 
+                    onDismiss()
+                    onNavigateToSettings("downloads")
+                }
+                QuickToolItem(Icons.Default.Star, "Bookmarks") { 
+                    onDismiss()
+                    onNavigateToSettings("bookmarks")
+                }
+                QuickToolItem(Icons.Default.Face, "Incognito") { 
+                    onDismiss()
+                    onNavigateToSettings("incognito")
+                }
             }
 
             Divider(color = Color.White.copy(alpha = 0.1f))

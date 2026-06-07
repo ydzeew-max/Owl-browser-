@@ -194,6 +194,13 @@ fun FinalizePage(onFinish: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_owl_onboarding),
+            contentDescription = "Owl All Set Mascot",
+            modifier = Modifier.size(180.dp),
+            contentScale = androidx.compose.ui.layout.ContentScale.Fit
+        )
+        Spacer(modifier = Modifier.height(32.dp))
         Text(
             "All Set!",
             color = Color.White,
@@ -206,9 +213,10 @@ fun FinalizePage(onFinish: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = com.owl.browser.ui.theme.DarkSlateGraphite)
         ) {
-            Text("Start Browsing", color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("START BROWSING", color = com.owl.browser.ui.theme.SilverWhite, fontSize = 16.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp)
         }
     }
 }
