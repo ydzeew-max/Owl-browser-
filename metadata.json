@@ -1,0 +1,10 @@
+{
+  "name": "Owl Browser",
+  "description": "High-performance HTML5 optimized modern flagship browser featuring a Glassmorphism engine, dynamic tab mechanics, privacy guards, and custom themes built with modern Compose architecture.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
