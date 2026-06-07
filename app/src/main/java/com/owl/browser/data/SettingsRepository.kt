@@ -19,6 +19,9 @@ class SettingsRepository(private val context: Context) {
         val GLASS_OPACITY = floatPreferencesKey("glass_opacity")
         val BLUR_RADIUS = floatPreferencesKey("blur_radius")
         val BOTTOM_BAR_STYLE = booleanPreferencesKey("bottom_bar_floating")
+        val THEME = androidx.datastore.preferences.core.stringPreferencesKey("theme")
+        val SEARCH_ENGINE = androidx.datastore.preferences.core.stringPreferencesKey("search_engine")
+        val LANGUAGE = androidx.datastore.preferences.core.stringPreferencesKey("language")
     }
     
     val isFirstRun: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -30,6 +33,37 @@ class SettingsRepository(private val context: Context) {
             preferences[FIRST_RUN] = false
         }
     }
+    
+    val theme: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[THEME] ?: "Dark (Recommended)"
+    }
+    
+    suspend fun setTheme(theme: String) {
+        context.dataStore.edit { preferences ->
+            preferences[THEME] = theme
+        }
+    }
+    
+    val searchEngine: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[SEARCH_ENGINE] ?: "Google"
+    }
+    
+    suspend fun setSearchEngine(engine: String) {
+        context.dataStore.edit { preferences ->
+            preferences[SEARCH_ENGINE] = engine
+        }
+    }
+    
+    val language: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[LANGUAGE] ?: "English"
+    }
+    
+    suspend fun setLanguage(lang: String) {
+        context.dataStore.edit { preferences ->
+            preferences[LANGUAGE] = lang
+        }
+    }
+
     
     val glassOpacity: Flow<Float> = context.dataStore.data.map { preferences ->
         preferences[GLASS_OPACITY] ?: 0.6f

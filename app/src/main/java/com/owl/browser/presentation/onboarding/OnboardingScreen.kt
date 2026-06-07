@@ -2,6 +2,7 @@ package com.owl.browser.presentation.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -22,7 +23,15 @@ import com.owl.browser.R
 import kotlinx.coroutines.launch
 
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(
+    currentLanguage: String,
+    onLanguageSelected: (String) -> Unit,
+    currentTheme: String,
+    onThemeSelected: (String) -> Unit,
+    currentSearchEngine: String,
+    onSearchEngineSelected: (String) -> Unit,
+    onFinish: () -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = { 5 })
     val coroutineScope = rememberCoroutineScope()
 
@@ -37,12 +46,13 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         ) { page ->
             when (page) {
                 0 -> WelcomePage()
-                1 -> LanguagePage()
-                2 -> ThemePage()
-                3 -> SearchEnginePage()
+                1 -> LanguagePage(currentLanguage, onLanguageSelected)
+                2 -> ThemePage(currentTheme, onThemeSelected)
+                3 -> SearchEnginePage(currentSearchEngine, onSearchEngineSelected)
                 4 -> FinalizePage(onFinish)
             }
         }
+
 
         // Pager Indicators and Buttons
         Row(
@@ -120,7 +130,7 @@ fun WelcomePage() {
 }
 
 @Composable
-fun LanguagePage() {
+fun LanguagePage(currentLanguage: String, onLanguageSelected: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -130,12 +140,12 @@ fun LanguagePage() {
     ) {
         Text("Language", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
-        ListOfOptions(listOf("English (US)", "English (UK)", "Español", "Français"), "English (US)")
+        ListOfOptions(listOf("English", "Русский"), currentLanguage, onLanguageSelected)
     }
 }
 
 @Composable
-fun ThemePage() {
+fun ThemePage(currentTheme: String, onThemeSelected: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -145,12 +155,12 @@ fun ThemePage() {
     ) {
         Text("System Theme", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
-        ListOfOptions(listOf("Dark (Recommended)", "System Default", "Light"), "Dark (Recommended)")
+        ListOfOptions(listOf("Dark (Recommended)", "System Default", "Light"), currentTheme, onThemeSelected)
     }
 }
 
 @Composable
-fun SearchEnginePage() {
+fun SearchEnginePage(currentSearchEngine: String, onSearchEngineSelected: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,17 +170,19 @@ fun SearchEnginePage() {
     ) {
         Text("Search Engine", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
-        ListOfOptions(listOf("Google", "Yandex", "Bing", "DuckDuckGo"), "Google")
+        ListOfOptions(listOf("Google", "Yandex", "Bing", "DuckDuckGo"), currentSearchEngine, onSearchEngineSelected)
     }
 }
 
 @Composable
-private fun ListOfOptions(options: List<String>, selected: String) {
+private fun ListOfOptions(options: List<String>, selected: String, onSelectionChange: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { option ->
             val isSelected = option == selected
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSelectionChange(option) },
                 colors = CardDefaults.cardColors(
                     containerColor = if (isSelected) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent
                 )

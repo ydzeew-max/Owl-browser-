@@ -17,6 +17,24 @@ class MainViewModel(private val repository: SettingsRepository) : ViewModel() {
         initialValue = null // null means loading
     )
 
+    val theme: StateFlow<String> = repository.theme.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "Dark (Recommended)"
+    )
+
+    val language: StateFlow<String> = repository.language.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "English"
+    )
+
+    val searchEngine: StateFlow<String> = repository.searchEngine.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "Google"
+    )
+
     val glassOpacity: StateFlow<Float> = repository.glassOpacity.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -32,6 +50,24 @@ class MainViewModel(private val repository: SettingsRepository) : ViewModel() {
     fun completeOnboarding() {
         viewModelScope.launch {
             repository.setFirstRunCompleted()
+        }
+    }
+
+    fun setTheme(theme: String) {
+        viewModelScope.launch {
+            repository.setTheme(theme)
+        }
+    }
+
+    fun setLanguage(language: String) {
+        viewModelScope.launch {
+            repository.setLanguage(language)
+        }
+    }
+
+    fun setSearchEngine(searchEngine: String) {
+        viewModelScope.launch {
+            repository.setSearchEngine(searchEngine)
         }
     }
 }

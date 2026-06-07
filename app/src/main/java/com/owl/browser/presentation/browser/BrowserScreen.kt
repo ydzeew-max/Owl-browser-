@@ -45,8 +45,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowserScreen(
-    glassOpacity: Float,
-    blurRadius: Float,
+    searchEngine: String,
     onNavigateToSettings: (String) -> Unit = {},
     viewModel: BrowserViewModel = viewModel()
 ) {
@@ -56,6 +55,9 @@ fun BrowserScreen(
     val density = LocalDensity.current
     val bottomBarHeightPx = remember { with(density) { 140.dp.toPx() } }
     var bottomBarOffset by remember { mutableStateOf(0f) }
+    
+    val solidBarColor = Color(0xFF1C2026).copy(alpha = 0.9f)
+
 
     // Map to hold WebView instances
     val webViews = remember { mutableStateMapOf<String, WebView>() }
@@ -212,14 +214,12 @@ fun BrowserScreen(
                     .offset { androidx.compose.ui.unit.IntOffset(0, bottomBarOffset.toInt()) }
             ) {
                     // Omnibox
-                    GlassBox(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp)
-                            .padding(bottom = 8.dp),
-                        opacity = glassOpacity,
-                        blurRadius = blurRadius,
-                        shape = RoundedCornerShape(14.dp)
+                            .padding(bottom = 8.dp)
+                            .background(solidBarColor, RoundedCornerShape(14.dp))
                     ) {
                         TextField(
                             value = inputText,
@@ -239,7 +239,12 @@ fun BrowserScreen(
                                 onGo = {
                                     var fixUrl = inputText
                                     if (!fixUrl.startsWith("http") && !fixUrl.startsWith("file://")) {
-                                        fixUrl = "https://www.google.com/search?q=\$fixUrl"
+                                        fixUrl = when (searchEngine) {
+                                            "Yandex" -> "https://yandex.com/search/?text=\$fixUrl"
+                                            "Bing" -> "https://www.bing.com/search?q=\$fixUrl"
+                                            "DuckDuckGo" -> "https://duckduckgo.com/?q=\$fixUrl"
+                                            else -> "https://www.google.com/search?q=\$fixUrl"
+                                        }
                                     }
                                     state.activeTabId?.let { id ->
                                         webViews[id]?.loadUrl(fixUrl)
@@ -251,13 +256,11 @@ fun BrowserScreen(
                     }
 
                     // Bottom Navigation Bar
-                    GlassBox(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp),
-                        opacity = glassOpacity,
-                        blurRadius = blurRadius,
-                        shape = RoundedCornerShape(14.dp)
+                            .height(64.dp)
+                            .background(solidBarColor, RoundedCornerShape(14.dp))
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize(),
