@@ -2,16 +2,16 @@ package com.owl.browser.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val MidnightBlue = Color(0xFF0B0F19)
-val GlassmorphismDark = Color(0x991E2538)
-val NeonPurple = Color(0xFF9D4EDD)
-val NeonCyan = Color(0xFF00F5D4)
-val OLEDBlack = Color(0xFF000000)
-val LightOwlBackground = Color(0xFFF3F4F6)
+val MidnightCharcoal = Color(0xFF080B11)
+val DarkSlateGraphite = Color(0xFF12161F)
+val HeavySmokedGlass = Color(0xDC12161F) // 86% alpha
+val SilverWhite = Color(0xFFE2E8F0)
+val AshGrey = Color(0xFF8A94A6)
 
-val PrimaryDark = NeonCyan
-val SecondaryDark = NeonPurple
-val TertiaryDark = Color(0xFF48CAE4)
+val PrimaryDark = AshGrey
+val SecondaryDark = Color(0xFF2C3440)
+val TertiaryDark = Color(0xFF3F4A59)
 
-val PrimaryLight = Color(0xFF5E60CE)
-val SecondaryLight = Color(0xFF4EA8DE)
+val PrimaryLight = Color(0xFF4A5568)
+val SecondaryLight = Color(0xFF718096)
+

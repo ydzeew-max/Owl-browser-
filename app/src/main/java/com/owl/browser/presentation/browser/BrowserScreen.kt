@@ -25,12 +25,14 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 fun BrowserScreen(
     glassOpacity: Float,
     blurRadius: Float,
+    onNavigateToSettings: (String) -> Unit = {},
     viewModel: BrowserViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -69,6 +72,10 @@ fun BrowserScreen(
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            val density = LocalDensity.current
+            val bottomBarHeightPx = remember { with(density) { 140.dp.toPx() } }
+            var bottomBarOffset by remember { mutableStateOf(0f) }
+
             AndroidView(
                 factory = { context ->
                     WebView(context).apply {
@@ -80,7 +87,6 @@ fun BrowserScreen(
                         settings.apply {
                             javaScriptEnabled = true
                             domStorageEnabled = true
-                            databaseEnabled = true
                             mediaPlaybackRequiresUserGesture = false
                             setSupportMultipleWindows(true)
                             javaScriptCanOpenWindowsAutomatically = true
@@ -93,6 +99,13 @@ fun BrowserScreen(
                             }
                         }
 
+                        addJavascriptInterface(object {
+                            @android.webkit.JavascriptInterface
+                            fun focusOmnibox() {
+                                post { isFocused.value = true }
+                            }
+                        }, "NativeBridge")
+
                         CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
 
                         webViewClient = object : WebViewClient() {
@@ -100,11 +113,13 @@ fun BrowserScreen(
                                 super.onPageStarted(view, url, favicon)
                                 url?.let { viewModel.updateUrl(it) }
                                 isFocused.value = false
+                                bottomBarOffset = 0f
                             }
 
                             override fun onPageFinished(view: WebView?, url: String?) {
                                 super.onPageFinished(view, url)
                                 view?.title?.let { viewModel.updateTitle(it) }
+                                view?.evaluateJavascript("document.body.style.paddingBottom = '140px';", null)
                             }
                         }
 
@@ -114,18 +129,16 @@ fun BrowserScreen(
                             }
                             
                             override fun onPermissionRequest(request: PermissionRequest) {
-                                // Real implementation would prompt user, auto-granting for demo per instructions
                                 request.grant(request.resources)
                             }
                         }
 
-                        // Override scrolling to auto-hide bottom bar
                         setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
                             val diff = scrollY - oldScrollY
-                            if (diff > 20) {
-                                viewModel.setBottomBarVisible(false)
-                            } else if (diff < -20) {
-                                viewModel.setBottomBarVisible(true)
+                            if (diff > 0) {
+                                bottomBarOffset = (bottomBarOffset + diff).coerceAtMost(bottomBarHeightPx)
+                            } else if (diff < -10) {
+                                bottomBarOffset = 0f
                             }
                         }
 
@@ -135,7 +148,6 @@ fun BrowserScreen(
                 },
                 modifier = Modifier.fillMaxSize(),
                 update = { view ->
-                    // Just caching the ref
                     webViewRef = view
                 }
             )
@@ -153,24 +165,14 @@ fun BrowserScreen(
             }
 
             // Bottom UI Container
-            AnimatedVisibility(
-                visible = state.showBottomBar,
-                enter = slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = spring(stiffness = 300f, dampingRatio = 0.8f)
-                ),
-                exit = slideOutVertically(
-                    targetOffsetY = { it },
-                    animationSpec = spring()
-                ),
-                modifier = Modifier.align(Alignment.BottomCenter)
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .offset { androidx.compose.ui.unit.IntOffset(0, bottomBarOffset.toInt()) }
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
                     // Omnibox
                     GlassBox(
                         modifier = Modifier
@@ -229,14 +231,13 @@ fun BrowserScreen(
                                 Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.White)
                             }
                             IconButton(onClick = { /* Tab Switcher */ }) {
-                                Icon(Icons.Default.List, contentDescription = "Tabs", tint = Color.White)
+                                Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Tabs", tint = Color.White)
                             }
                             IconButton(onClick = { viewModel.toggleSettingsSheet(true) }) {
                                 Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
                             }
                         }
                     }
-                }
             }
         }
 
@@ -244,7 +245,9 @@ fun BrowserScreen(
         if (state.isSettingsSheetOpen) {
             SettingsBottomSheet(
                 onDismiss = { viewModel.toggleSettingsSheet(false) },
-                glassOpacity = glassOpacity
+                onNavigateToSettings = { route -> 
+                    onNavigateToSettings(route)
+                }
             )
         }
     }

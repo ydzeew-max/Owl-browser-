@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class BrowserState(
-    val url: String = "https://www.google.com",
-    val title: String = "Google",
+    val url: String = "file:///android_asset/start.html",
+    val title: String = "Owl Browser",
     val isLoading: Boolean = false,
     val progress: Int = 0,
     val isSettingsSheetOpen: Boolean = false,

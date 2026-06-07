@@ -1,134 +1,112 @@
 package com.owl.browser.presentation.browser
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.owl.browser.ui.theme.HeavySmokedGlass
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsBottomSheet(
     onDismiss: () -> Unit,
-    glassOpacity: Float
+    onNavigateToSettings: (String) -> Unit
 ) {
-    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = modalBottomSheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        scrimColor = Color.Black.copy(alpha = 0.6f)
+        containerColor = HeavySmokedGlass,
+        scrimColor = Color.Black.copy(alpha = 0.5f)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text(
-                "Browser Settings",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-
-            // Section 1: Basic Tools
-            SettingsSection(title = "BASIC TOOLS") {
-                SettingsItem("History & Downloads")
-                SettingsItem("Bookmarks & Reading List")
-                SettingsToggle("Incognito Mode", false)
-                SettingsToggle("Desktop Site Toggle", false)
-                SettingsItem("Share Page & Find in Page")
+            // Header Section: Quick Tools Grid
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                QuickToolItem(Icons.Default.History, "History") { /* Action */ }
+                QuickToolItem(Icons.Default.Download, "Downloads") { /* Action */ }
+                QuickToolItem(Icons.Default.Star, "Bookmarks") { /* Action */ }
+                QuickToolItem(Icons.Default.Face, "Incognito") { /* Action */ }
             }
 
-            // Section 2: Smart Navigation & Tab Management
-            SettingsSection(title = "SMART NAVIGATION & TAB MANAGEMENT") {
-                SettingsItem("Tab Switcher Style (Cards)")
-                SettingsItem("Tab Groups")
-                SettingsToggle("Auto-Close Tabs (Inactive)", true)
+            Divider(color = Color.White.copy(alpha = 0.1f))
+
+            // Navigation Subsections
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                RoutingRow(Icons.Default.Security, "Security & Privacy") {
+                    onDismiss()
+                    onNavigateToSettings("security")
+                }
+                RoutingRow(Icons.Default.Build, "Advanced Configuration") {
+                    onDismiss()
+                    onNavigateToSettings("advanced")
+                }
+                RoutingRow(Icons.Default.Brush, "Theme & Appearance") {
+                    onDismiss()
+                    onNavigateToSettings("appearance")
+                }
+                RoutingRow(Icons.Default.Info, "About Owl Browser") {
+                    onDismiss()
+                    onNavigateToSettings("about")
+                }
             }
 
-            // Section 3: Media & Content
-            SettingsSection(title = "MEDIA & CONTENT") {
-                SettingsToggle("Force Dark Mode for Web Contents", true)
-                SettingsToggle("System Picture-in-Picture (PiP)", true)
-                SettingsToggle("Background Audio Playback", false)
-                SettingsToggle("Smart Reader Mode", false)
-            }
-
-            // Section 4: Advanced UI Customization
-            SettingsSection(title = "ADVANCED UI CUSTOMIZATION") {
-                SettingsItem("Glass Transparency Slider: ${(glassOpacity * 100).toInt()}%")
-                SettingsItem("Real-Time Background Blur Engine")
-                SettingsItem("Corner Radius Grid Slider")
-                SettingsItem("Typography: Tech-Futuristic")
-                SettingsItem("Color Themes: Midnight Blue")
-            }
-
-            // Section 5: Advanced Security & Privacy
-            SettingsSection(title = "ADVANCED SECURITY & PRIVACY") {
-                SettingsToggle("Ad & Tracker Blocker", true)
-                SettingsToggle("Anti-Fingerprinting Engine", true)
-                SettingsToggle("Biometric App Lock", false)
-                SettingsToggle("Auto-Clear Data on Exit", false)
-                SettingsToggle("HTTPS Only Mode", true)
-                SettingsItem("Per-Site Permissions Manager")
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
 @Composable
-fun SettingsSection(title: String, content: @Composable ColumnScope.() -> Unit) {
+fun QuickToolItem(icon: ImageVector, label: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White.copy(alpha = 0.05f), MaterialTheme.shapes.medium)
-            .padding(16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            title,
-            color = MaterialTheme.colorScheme.primary,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-        content()
+        Icon(icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
     }
 }
 
 @Composable
-fun SettingsItem(title: String) {
-    Text(
-        title,
-        color = Color.White,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp)
-    )
-}
-
-@Composable
-fun SettingsToggle(title: String, initialValue: Boolean) {
+fun RoutingRow(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, color = Color.White)
-        Switch(checked = initialValue, onCheckedChange = {})
+        Icon(icon, contentDescription = label, tint = Color.LightGray, modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(label, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(Icons.Default.ChevronRight, contentDescription = "Go", tint = Color.Gray)
     }
 }

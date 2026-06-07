@@ -37,9 +37,9 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         ) { page ->
             when (page) {
                 0 -> WelcomePage()
-                1 -> SearchEnginePage()
-                2 -> CustomizationPage()
-                3 -> PrivacyPage()
+                1 -> LanguagePage()
+                2 -> ThemePage()
+                3 -> SearchEnginePage()
                 4 -> FinalizePage(onFinish)
             }
         }
@@ -120,6 +120,36 @@ fun WelcomePage() {
 }
 
 @Composable
+fun LanguagePage() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Language", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(32.dp))
+        ListOfOptions(listOf("English (US)", "English (UK)", "Español", "Français"), "English (US)")
+    }
+}
+
+@Composable
+fun ThemePage() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("System Theme", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(32.dp))
+        ListOfOptions(listOf("Dark (Recommended)", "System Default", "Light"), "Dark (Recommended)")
+    }
+}
+
+@Composable
 fun SearchEnginePage() {
     Column(
         modifier = Modifier
@@ -128,79 +158,30 @@ fun SearchEnginePage() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            "Choose Search Engine",
-            color = Color.White,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text("Search Engine", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(32.dp))
-        // Simple mock of selection
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-        ) {
-            Text("Google (Default)", modifier = Modifier.padding(16.dp), color = Color.White)
-        }
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-        ) {
-            Text("DuckDuckGo", modifier = Modifier.padding(16.dp), color = Color.White)
-        }
+        ListOfOptions(listOf("Google", "Yandex", "Bing", "DuckDuckGo"), "Google")
     }
 }
 
 @Composable
-fun CustomizationPage() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            "Express Customization",
-            color = Color.White,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(32.dp))
-        Text("Theme: Midnight Blue", color = Color.White)
-        Text("Bottom Bar: Docked", color = Color.White)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("You can change these in settings later.", color = Color.Gray, fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun PrivacyPage() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_owl_ninja),
-            contentDescription = "Privacy Owl Mascot",
-            modifier = Modifier.size(150.dp)
-        )
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            "Core Privacy Guards",
-            color = Color.White,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            "Ad-Blocker & Anti-Tracking are enabled by default for your safety.",
-            color = Color.LightGray,
-            textAlign = TextAlign.Center
-        )
+private fun ListOfOptions(options: List<String>, selected: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        options.forEach { option ->
+            val isSelected = option == selected
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isSelected) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent
+                )
+            ) {
+                Text(
+                    text = option,
+                    modifier = Modifier.padding(16.dp),
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White
+                )
+            }
+        }
     }
 }
 

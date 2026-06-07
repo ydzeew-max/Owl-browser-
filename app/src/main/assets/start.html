@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Owl Start Page</title>
+    <style>
+        body {
+            background-color: #080B11;
+            color: #E2E8F0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            margin-top: 60px;
+            text-align: center;
+        }
+        .header img {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-top: 16px;
+            font-weight: 600;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 40px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #E2E8F0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .icon {
+            width: 56px;
+            height: 56px;
+            background-color: #12161F;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .label {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        .search-container {
+            margin-top: 40px;
+            width: 90%;
+            max-width: 400px;
+            background-color: #12161F;
+            border-radius: 20px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .search-container input {
+            background: transparent;
+            border: none;
+            color: #E2E8F0;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 onclick="promptCustom()">Owl Browser</h1>
+    </div>
+
+    <div class="search-container" onclick="promptSearch()">
+        <span>🔍</span>
+        <input type="text" placeholder="Search or type web address" readonly>
+    </div>
+
+    <div class="grid">
+        <a href="https://www.google.com" class="item">
+            <div class="icon">G</div>
+            <div class="label">Google</div>
+        </a>
+        <a href="https://www.youtube.com" class="item">
+            <div class="icon" style="color: #FF0000;">Y</div>
+            <div class="label">YouTube</div>
+        </a>
+        <a href="https://www.reddit.com" class="item">
+            <div class="icon" style="color: #FF4500;">R</div>
+            <div class="label">Reddit</div>
+        </a>
+        <a href="https://www.wikipedia.org" class="item">
+            <div class="icon">W</div>
+            <div class="label">Wikipedia</div>
+        </a>
+    </div>
+
+    <script>
+        function promptSearch() {
+            // Android interface call could be here to focus the native search bar, 
+            // but we can also handle it natively.
+            NativeBridge.focusOmnibox();
+        }
+        function promptCustom() {
+            alert("Welcome to Owl Browser!");
+        }
+    </script>
+</body>
+</html>
